@@ -48,6 +48,10 @@ impl Screen {
         capture_screen(&self.display_info)
     }
 
+    pub fn capture_fast(&self) -> Result<RgbaImage> {
+        capture_screen_fast(&self.display_info)
+    }
+
     /**
      * 截取指定区域
      * 区域x,y为相对于当前屏幕的x,y坐标

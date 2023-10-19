@@ -1,11 +1,16 @@
-use crate::image_utils::{bgra_to_rgba_image, remove_extra_data};
 use anyhow::{anyhow, Result};
+use core_graphics::display::kCGWindowImageDefault;
 use core_graphics::{
-    display::{kCGNullWindowID, kCGWindowImageDefault, kCGWindowListOptionOnScreenOnly, CGDisplay},
+    display::{
+        kCGNullWindowID, kCGWindowImageNominalResolution, kCGWindowListOptionOnScreenOnly,
+        CGDisplay,
+    },
     geometry::{CGPoint, CGRect, CGSize},
 };
 use display_info::DisplayInfo;
 use image::RgbaImage;
+
+use crate::image_utils::{bgra_to_rgba_image, remove_extra_data, vec_to_rgba_image};
 
 fn capture(display_info: &DisplayInfo, cg_rect: CGRect) -> Result<RgbaImage> {
     let cg_image = CGDisplay::screenshot(
@@ -27,9 +32,33 @@ fn capture(display_info: &DisplayInfo, cg_rect: CGRect) -> Result<RgbaImage> {
     bgra_to_rgba_image(width as u32, height as u32, clean_buf)
 }
 
+fn capture_fast(display_info: &DisplayInfo, cg_rect: CGRect) -> Result<RgbaImage> {
+    let cg_image = CGDisplay::screenshot(
+        cg_rect,
+        kCGWindowListOptionOnScreenOnly,
+        kCGNullWindowID,
+        kCGWindowImageNominalResolution,
+    )
+    .ok_or_else(|| anyhow!("Screen:{} screenshot failed", display_info.id))?;
+
+    let width = cg_image.width();
+    let height = cg_image.height();
+
+    vec_to_rgba_image(
+        width as u32,
+        height as u32,
+        Vec::from(cg_image.data().bytes()),
+    )
+}
+
 pub fn capture_screen(display_info: &DisplayInfo) -> Result<RgbaImage> {
     let cg_display = CGDisplay::new(display_info.id);
     capture(display_info, cg_display.bounds())
+}
+
+pub fn capture_screen_fast(display_info: &DisplayInfo) -> Result<RgbaImage> {
+    let cg_display = CGDisplay::new(display_info.id);
+    capture_fast(display_info, cg_display.bounds())
 }
 
 pub fn capture_screen_area(

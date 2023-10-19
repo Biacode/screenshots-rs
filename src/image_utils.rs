@@ -23,6 +23,7 @@ pub fn bgra_to_rgba_image(width: u32, height: u32, buf: Vec<u8>) -> Result<RgbaI
 /// https://github.com/nashaofu/screenshots-rs/issues/29
 /// https://github.com/nashaofu/screenshots-rs/issues/38
 #[cfg(any(target_os = "macos", test))]
+#[allow(dead_code)]
 pub fn remove_extra_data(width: usize, bytes_per_row: usize, buf: Vec<u8>) -> Vec<u8> {
     buf.chunks_exact(bytes_per_row)
         .flat_map(|row| row.split_at(width * 4).0.to_owned())
