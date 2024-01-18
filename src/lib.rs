@@ -49,7 +49,7 @@ impl Screen {
     }
 
     pub fn capture_fast(&self) -> Result<RgbaImage> {
-        capture_screen_fast(&self.display_info)
+        capture_screen(&self.display_info)
     }
 
     /**

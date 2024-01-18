@@ -113,9 +113,9 @@ fn capture(x: i32, y: i32, width: u32, height: u32) -> Result<RgbaImage> {
             let index = ((y * width + x) * 4) as usize;
             let (r, g, b, a) = get_pixel_rgba(bytes, x, y, width, bits_per_pixel, bit_order);
 
-            rgba[index] = r;
+            rgba[index] = b;
             rgba[index + 1] = g;
-            rgba[index + 2] = b;
+            rgba[index + 2] = r;
             rgba[index + 3] = a;
         }
     }
